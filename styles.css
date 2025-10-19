@@ -27,3 +27,9 @@ body{background:#0b0b0b;color:#eee;}
   #print-root{ display:block !important; }
   @page{ size:A4; margin:12mm; }
 }
+
+.panel-body .pull-right {
+  float: right;
+  min-width: 70px;
+  text-align: right;
+}
