@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="spiceVillageApp">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body ng-controller="AppCtrl as vm" ng-class="{'auth': vm.isAuthed()}">
   <!-- LOGIN -->
   <div class="login-wrapper" ng-if="!vm.isAuthed()">
@@ -54,13 +56,15 @@
           <div class="panel panel-default">
             <div class="panel-heading"><strong>Categories</strong></div>
             <ul class="list-group category-list">
-              <li class="list-group-item" ng-repeat="cat in vm.menu" ng-class="{'active': vm.activeIndex==$index}" ng-click="vm.setActive($index)">
+              <li class="list-group-item" ng-repeat="cat in vm.menu" ng-class="{'active': vm.activeIndex==$index}"
+                ng-click="vm.setActive($index)">
                 {{cat.category}} <span class="badge">{{cat.items.length}}</span>
               </li>
             </ul>
             <div class="panel-footer">
               <form ng-submit="vm.addCategory()">
-                <input type="text" class="form-control" ng-model="vm.newCategoryName" placeholder="New category" required>
+                <input type="text" class="form-control" ng-model="vm.newCategoryName" placeholder="New category"
+                  required>
                 <button class="btn btn-primary btn-sm" style="margin-top:6px;"><i class="fa fa-plus"></i> Add</button>
               </form>
             </div>
@@ -68,18 +72,25 @@
 
           <div class="panel panel-info">
             <div class="panel-heading"><strong>Selected Items</strong></div>
-            <ul class="list-group selected-list">
-              <li class="list-group-item" ng-repeat="s in vm.selectedItems">{{s.name}} <span class="pull-right">{{s.price}}</span></li>
-              <li class="list-group-item" ng-if="vm.selectedItems.length===0"><em>No selections yet.</em></li>
-            </ul>
-            <div class="panel-footer">
+            <div class="panel-body">
+              <div ng-repeat="i in vm.selectedItems" style="margin-bottom: 5px;">
+                <span>{{i.name}}</span>
+                <span class="pull-right"><strong>{{i.price}}</strong></span>
+              </div>
+
+              <hr ng-if="vm.selectedItems.length > 0" />
+              <div ng-if="vm.selectedItems.length > 0" class="text-right">
+                <strong>Total:</strong> {{vm.totalSelectedPrice() | currency}}
+              </div>
+
               <button class="btn btn-default btn-sm" ng-click="vm.clearSelections()">Clear</button>
-              <button class="btn btn-success btn-sm pull-right" ng-click="vm.printSelected()" ng-disabled="!vm.selectedItems.length">
-                <i class="fa fa-print"></i> Print Selected
+              <button class="btn btn-success btn-sm pull-right" ng-click="vm.printSelected()">
+                <i class="glyphicon glyphicon-print"></i> Print Selected
               </button>
-              <div class="clearfix"></div>
             </div>
           </div>
+
+
         </div>
 
         <div class="col-md-9">
@@ -88,7 +99,12 @@
             <div class="panel-body">
               <table class="table table-striped table-hover admin-table">
                 <thead>
-                  <tr><th></th><th>Item</th><th style="width:160px;">Price</th><th style="width:150px;">Actions</th></tr>
+                  <tr>
+                    <th></th>
+                    <th>Item</th>
+                    <th style="width:160px;">Price</th>
+                    <th style="width:150px;">Actions</th>
+                  </tr>
                 </thead>
                 <tbody>
                   <tr ng-repeat="item in vm.active().items">
@@ -107,7 +123,8 @@
                           <i class="fa" ng-class="{'fa-pencil':!item.__edit,'fa-save':item.__edit}"></i>
                           {{item.__edit ? 'Save' : 'Edit'}}
                         </button>
-                        <button class="btn btn-danger" ng-click="vm.deleteItem($index)"><i class="fa fa-trash"></i></button>
+                        <button class="btn btn-danger" ng-click="vm.deleteItem($index)"><i
+                            class="fa fa-trash"></i></button>
                       </div>
                     </td>
                   </tr>
@@ -133,7 +150,7 @@
       <div>7520 149th St W, Apple Valley, MN 55124</div>
     </div>
     <div id="print-columns">
-      <div class="pcol" ng-repeat="cat in vm.menu">
+      <div class="pcol" ng-repeat="cat in vm.printBuffer">
         <div class="p-cat">{{cat.category}}</div>
         <table class="p-table">
           <tr ng-repeat="i in cat.items">
@@ -142,7 +159,14 @@
           </tr>
         </table>
       </div>
+
     </div>
+    <div ng-if="vm.printBuffer && vm.printBuffer.length > 0" class="text-right"
+      style="margin-top:20px; font-weight:bold; font-size:16px;">
+      Total: {{vm.printTotal() | currency}}
+    </div>
+
+
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
@@ -150,4 +174,5 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>
