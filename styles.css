@@ -1,0 +1,29 @@
+
+body{background:#0b0b0b;color:#eee;}
+.login-card{background:#222;padding:20px;border-radius:10px;max-width:420px;margin:10vh auto;text-align:center;border:1px solid rgba(255,255,255,.08);box-shadow:0 16px 48px rgba(0,0,0,.5)}
+.logo{width:200px;height:auto;border-radius:10px;margin-bottom:8px}
+.hint{opacity:.8}
+.navbar-inverse .navbar-brand{color:#ffd26a!important;font-weight:bold}
+.main-content{margin-top:80px}
+.admin-table td, .admin-table th, .form-control, label { color: #000 !important; } /* ensure black text inside panels */
+.panel, .panel .table, .panel .form-control{background:#fff;color:#000}
+.category-list .active{background:#222;color:#ffd26a}
+
+/* PRINT SHEET */
+#print-root{display:none;background:#fff;color:#000;padding:16px 18px}
+#print-header{text-align:center;margin-bottom:12px}
+#print-header h1{font-weight:900;margin:0;font-size:20pt;letter-spacing:1px}
+#print-columns{column-count:2;column-gap:22px}
+.pcol{break-inside:avoid;margin-bottom:10px}
+.p-cat{background:#ffe766;font-weight:700;padding:4px 6px;margin:8px 0;border-left:4px solid #222}
+.p-table{width:100%;border-collapse:collapse}
+.p-table td{padding:2px 4px;border-bottom:1px solid #eaeaea;font-size:10pt}
+.p-item{width:74%}
+.p-price{text-align:right;width:26%}
+
+/* Two-column A4 print */
+@media print {
+  body > *:not(#print-root){ display:none !important; }
+  #print-root{ display:block !important; }
+  @page{ size:A4; margin:12mm; }
+}

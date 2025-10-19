@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="spiceVillageApp">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spice Village - Admin</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body ng-controller="AppCtrl as vm" ng-class="{'auth': vm.isAuthed()}">
+  <!-- LOGIN -->
+  <div class="login-wrapper" ng-if="!vm.isAuthed()">
+    <div class="login-card animated fadeInDown">
+      <img src="assets/images/logo.jpg" class="logo" alt="Spice Village">
+      <h1>Spice Village</h1>
+      <h4>Admin Console</h4>
+      <form ng-submit="vm.login()">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" class="form-control input-lg" ng-model="vm.creds.username" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-control input-lg" ng-model="vm.creds.password" required>
+        </div>
+        <button type="submit" class="btn btn-success btn-block btn-lg">Login</button>
+        <p class="hint">Demo creds: <strong>admin / spice123</strong></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="app-wrapper container-fluid" ng-if="vm.isAuthed()">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Spice Village Admin</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="" ng-click="vm.openPrintPreview()"><i class="fa fa-eye"></i> Preview</a></li>
+          <li><a href="" ng-click="vm.printAll()"><i class="fa fa-print"></i> Print Full Menu</a></li>
+          <li><a href="" ng-click="vm.downloadPdf()"><i class="fa fa-file-pdf-o"></i> Download PDF</a></li>
+          <li><a href="" ng-click="vm.logout()"><i class="fa fa-sign-out"></i> Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container-fluid main-content">
+      <h2 class="page-title">Catering Menu</h2>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="panel panel-default">
+            <div class="panel-heading"><strong>Categories</strong></div>
+            <ul class="list-group category-list">
+              <li class="list-group-item" ng-repeat="cat in vm.menu" ng-class="{'active': vm.activeIndex==$index}" ng-click="vm.setActive($index)">
+                {{cat.category}} <span class="badge">{{cat.items.length}}</span>
+              </li>
+            </ul>
+            <div class="panel-footer">
+              <form ng-submit="vm.addCategory()">
+                <input type="text" class="form-control" ng-model="vm.newCategoryName" placeholder="New category" required>
+                <button class="btn btn-primary btn-sm" style="margin-top:6px;"><i class="fa fa-plus"></i> Add</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="panel panel-info">
+            <div class="panel-heading"><strong>Selected Items</strong></div>
+            <ul class="list-group selected-list">
+              <li class="list-group-item" ng-repeat="s in vm.selectedItems">{{s.name}} <span class="pull-right">{{s.price}}</span></li>
+              <li class="list-group-item" ng-if="vm.selectedItems.length===0"><em>No selections yet.</em></li>
+            </ul>
+            <div class="panel-footer">
+              <button class="btn btn-default btn-sm" ng-click="vm.clearSelections()">Clear</button>
+              <button class="btn btn-success btn-sm pull-right" ng-click="vm.printSelected()" ng-disabled="!vm.selectedItems.length">
+                <i class="fa fa-print"></i> Print Selected
+              </button>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-9">
+          <div class="panel panel-default" ng-if="vm.active()">
+            <div class="panel-heading"><strong>{{vm.active().category}}</strong></div>
+            <div class="panel-body">
+              <table class="table table-striped table-hover admin-table">
+                <thead>
+                  <tr><th></th><th>Item</th><th style="width:160px;">Price</th><th style="width:150px;">Actions</th></tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="item in vm.active().items">
+                    <td><input type="checkbox" ng-model="item.__selected" ng-change="vm.syncSelected()"></td>
+                    <td>
+                      <span ng-if="!item.__edit">{{item.name}}</span>
+                      <input ng-if="item.__edit" class="form-control input-sm" ng-model="item.name">
+                    </td>
+                    <td>
+                      <span ng-if="!item.__edit">{{item.price}}</span>
+                      <input ng-if="item.__edit" class="form-control input-sm" ng-model="item.price">
+                    </td>
+                    <td>
+                      <div class="btn-group btn-group-xs">
+                        <button class="btn btn-default" ng-click="item.__edit=!item.__edit">
+                          <i class="fa" ng-class="{'fa-pencil':!item.__edit,'fa-save':item.__edit}"></i>
+                          {{item.__edit ? 'Save' : 'Edit'}}
+                        </button>
+                        <button class="btn btn-danger" ng-click="vm.deleteItem($index)"><i class="fa fa-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <form class="form-inline add-item" ng-submit="vm.addItem()">
+                <input type="text" class="form-control" ng-model="vm.newItem.name" placeholder="Item name" required>
+                <input type="text" class="form-control" ng-model="vm.newItem.price" placeholder="Price" required>
+                <button class="btn btn-primary"><i class="fa fa-plus"></i> Add Item</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINT ROOT (hidden on screen, visible on print) -->
+  <div id="print-root">
+    <div id="print-header">
+      <h1>SPICE VILLAGE</h1>
+      <div>Indian Restaurant &amp; Grocery</div>
+      <div>7520 149th St W, Apple Valley, MN 55124</div>
+    </div>
+    <div id="print-columns">
+      <div class="pcol" ng-repeat="cat in vm.menu">
+        <div class="p-cat">{{cat.category}}</div>
+        <table class="p-table">
+          <tr ng-repeat="i in cat.items">
+            <td class="p-item">{{i.name}}</td>
+            <td class="p-price">{{i.price}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
